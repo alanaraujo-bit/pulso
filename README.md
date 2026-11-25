@@ -1,150 +1,154 @@
 <div align="center">
 
-<img src="icons/128x128.png" width="88" alt="Pulso icon">
+<img src="icons/128x128.png" width="88" alt="Ícone do Pulso">
 
 # Pulso
 
-**Battery for every wireless peripheral, one glance from the clock.**
+**A bateria de todos os seus periféricos sem fio, a um olhar do relógio.**
 
-A small liquid-glass panel for Windows 11 that shows charge, charging state, time on and
-real usage estimates for your mouse, keyboard and headset. It talks to the devices directly
-over HID, so no vendor app has to be running.
+Um painel de vidro para o Windows 11 que mostra carga, carregamento, tempo ligado e estimativa
+real de uso do mouse, do teclado e do headset. Ele conversa direto com os dispositivos via HID,
+sem precisar do app do fabricante aberto.
 
 [![CI](https://github.com/alanaraujo-bit/pulso/actions/workflows/ci.yml/badge.svg)](https://github.com/alanaraujo-bit/pulso/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/alanaraujo-bit/pulso?include_prereleases&sort=semver)](https://github.com/alanaraujo-bit/pulso/releases)
-[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/alanaraujo-bit/pulso?sort=semver)](https://github.com/alanaraujo-bit/pulso/releases)
+[![Licença: MIT](https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg)](LICENSE)
 ![Windows 11](https://img.shields.io/badge/Windows-11-0078D6?logo=windows11&logoColor=white)
 ![Rust](https://img.shields.io/badge/Rust-Tauri%202-DEA584?logo=rust&logoColor=white)
 
-[**Download**](https://github.com/alanaraujo-bit/pulso/releases/latest) ·
-[Supported devices](#supported-devices) ·
-[Add your device](docs/adding-a-device.md) ·
-[Contributing](CONTRIBUTING.md) ·
-[Português](README.pt-BR.md)
+[**Baixar**](https://github.com/alanaraujo-bit/pulso/releases/latest) ·
+[Dispositivos](#dispositivos-suportados) ·
+[Adicione o seu](docs/adicionar-dispositivo.md) ·
+[Como contribuir](CONTRIBUTING.md) ·
+[English](README.en.md)
 
-<img src="docs/assets/open.gif" width="420" alt="Clicking a tray percentage opens the Pulso glass panel">
+<img src="docs/assets/open.gif" width="420" alt="Clique na porcentagem da bandeja abre o painel de vidro do Pulso">
 
 </div>
 
-## Why
+## Por quê
 
-Most battery widgets show a number. Pulso also tells you what the number means:
-**how many hours of use are left at the way you actually use the device**, how long it has
-been on, and when it was last charged. It measures drain against the time the device was
-really active, so a headset that sat switched off all night does not skew the estimate.
+A maioria dos widgets de bateria mostra só um número. O Pulso diz o que esse número significa:
+**quantas horas de uso ainda restam do jeito que você realmente usa o dispositivo**, há quanto
+tempo ele está ligado e quando foi a última carga. O consumo é medido contra o tempo em que o
+dispositivo estava ativo de verdade, então um headset desligado a noite toda não bagunça a estimativa.
 
-## Features
+## Recursos
 
-<img align="right" src="docs/assets/panel-light-states.png" width="300" alt="Light theme with charging, low and asleep states">
+<img align="right" src="docs/assets/panel-light-states.png" width="300" alt="Tema claro com estados carregando, bateria baixa e repouso">
 
-- **Percent next to the clock.** One tray glyph per device, crisp at any DPI. Green while
-  charging, red at 15% and below, dimmed while the device sleeps.
-- **Glass flyout.** Opens anchored to the icon you clicked, on real Windows acrylic.
-  Closes with <kbd>Esc</kbd> or a click outside.
-- **Floating panel.** Detach it, drag it anywhere, keep it on top if you like.
-- **Estimates that learn.** Starts from the model's rated battery life, then converges to your
-  measured drain (hover *Remaining* to see how much of it is measured).
-- **Time to full** while charging, with the usual Li-ion slowdown above 85%.
-- **Alerts** at 15%, 5% and when charging completes, once per cycle.
-- **Featherweight.** At rest Pulso is a single Rust process using about **3 MB of RAM and
-  0.1% of one core**. The panel's webview exists only while you look at it (300 ms cold open,
-  30 ms warm) and is dropped after three minutes closed.
-- **Read-only and coexistent.** Pulso only asks for battery and name. It never writes device
-  settings and works alongside G HUB and other vendor apps.
-- **Light and dark**, following Windows.
+- **Porcentagem ao lado do relógio.** Um indicador por dispositivo, nítido em qualquer escala.
+  Verde carregando, vermelho em 15% ou menos, apagado quando o dispositivo dorme.
+- **Flyout de vidro.** Abre ancorado no ícone clicado, com o acrylic do próprio Windows.
+  Fecha com <kbd>Esc</kbd> ou clicando fora.
+- **Painel flutuante.** Destaque, arraste para onde quiser e deixe sempre visível se preferir.
+- **Estimativas que aprendem.** Começam pela autonomia oficial do modelo e convergem para o seu
+  consumo medido (passe o mouse em *Restante* para ver quanto já vem da medição).
+- **Tempo até carga completa**, considerando a desaceleração do Li-ion acima de 85%.
+- **Alertas** em 15%, 5% e quando a carga completa, uma vez por ciclo.
+- **Levíssimo.** Em repouso é um único processo Rust com cerca de **3 MB de RAM e 0,1% de um
+  núcleo**. O WebView do painel só existe enquanto você olha (abre em 300 ms a frio, 30 ms a
+  quente) e é descartado após três minutos fechado.
+- **Somente leitura.** O Pulso só pergunta bateria e nome. Nunca grava configuração no
+  dispositivo e convive com o G HUB e outros apps de fabricante.
+- **Tema claro e escuro**, seguindo o Windows.
 
 <br clear="right">
 
-<p align="center"><img src="docs/assets/tray.png" width="560" alt="Per-device percentages in the Windows tray"></p>
+<p align="center"><img src="docs/assets/tray.png" width="560" alt="Porcentagem de cada dispositivo na bandeja do Windows"></p>
 
-## Supported devices
+## Dispositivos suportados
 
-| Protocol | Connection | Verified with |
+| Protocolo | Conexão | Testado com |
 |---|---|---|
-| Logitech **HID++ 2.0** (features `0x1004`, `0x1000`, `0x1001`) | LIGHTSPEED, Unifying and Bolt receivers, USB cable | PRO 2 LIGHTSPEED |
-| Logitech **Centurion** (bridge `0x0003`, battery `0x0104`) | Headset dongle, usage page `0xFFA0` | PRO X 2 LIGHTSPEED |
-| **CompX 2.4G** (report `0x13`, session + push) | Dongle `3554:FA09` | AULA F75 |
+| Logitech **HID++ 2.0** (features `0x1004`, `0x1000`, `0x1001`) | Receptores LIGHTSPEED, Unifying e Bolt, cabo USB | PRO 2 LIGHTSPEED |
+| Logitech **Centurion** (bridge `0x0003`, bateria `0x0104`) | Dongle de headset, usage page `0xFFA0` | PRO X 2 LIGHTSPEED |
+| **CompX 2.4G** (report `0x13`, sessão + push) | Dongle `3554:FA09` | AULA F75 |
 
-Other devices that speak these protocols most likely work already (most Logitech G mice and
-keyboards, more AULA, MCHOSE and Lingbao boards on the same dongle).
+Outros aparelhos que falam esses protocolos provavelmente já funcionam (a maioria dos mouses e
+teclados Logitech G, e outros teclados AULA, MCHOSE e Lingbao no mesmo dongle).
 
-**Your device is not here?** That is the best way to help. Run the probe, open a
-[device request](https://github.com/alanaraujo-bit/pulso/issues/new?template=device-support.yml)
-and paste the output. The [guide](docs/adding-a-device.md) shows how a new protocol is added,
-start to finish.
+**O seu não está aqui?** Essa é a melhor forma de ajudar. Rode o probe, abra um
+[pedido de dispositivo](https://github.com/alanaraujo-bit/pulso/issues/new?template=device-support.yml)
+e cole a saída. O [guia](docs/adicionar-dispositivo.md) mostra como um protocolo novo é
+adicionado, do começo ao fim.
 
-## Install
+## Instalação
 
-1. Download `Pulso_x.y.z_x64-setup.exe` from the [latest release](https://github.com/alanaraujo-bit/pulso/releases/latest).
-2. Run it. It installs per user, no admin needed.
-3. Your devices show up next to the clock. Click any percentage to open the panel;
-   right-click for options.
+1. Baixe o `Pulso_x.y.z_x64-setup.exe` na [última versão](https://github.com/alanaraujo-bit/pulso/releases/latest).
+2. Execute. Instala por usuário, sem precisar de administrador.
+3. Os dispositivos aparecem ao lado do relógio. Clique numa porcentagem para abrir o painel;
+   botão direito para as opções.
 
-The installer is not code-signed yet, so SmartScreen may ask for confirmation
-(*More info → Run anyway*). Requires Windows 11 (WebView2 is built in).
+O instalador ainda não é assinado, então o SmartScreen pode pedir confirmação
+(*Mais informações → Executar assim mesmo*). Requer Windows 11 (o WebView2 já vem nele).
 
-## How it works
+## Como funciona
 
 ```mermaid
 flowchart LR
-    subgraph Devices
-        M[Mouse<br/>HID++ receiver]
-        H[Headset<br/>Centurion dongle]
-        K[Keyboard<br/>CompX dongle]
+    subgraph Dispositivos
+        M[Mouse<br/>receptor HID++]
+        H[Headset<br/>dongle Centurion]
+        K[Teclado<br/>dongle CompX]
     end
-    M & H & K -->|HID reports| MON[monitor.rs<br/>slow polling + event listening]
-    MON -->|readings| EST[estimate.rs<br/>history, drain model, alerts]
-    EST --> TRAY[Tray glyphs<br/>GDI rendered]
-    EST --> UI[Panel webview<br/>created on demand]
+    M & H & K -->|reports HID| MON[monitor.rs<br/>polling lento + escuta de eventos]
+    MON -->|leituras| EST[estimate.rs<br/>histórico, modelo de consumo, alertas]
+    EST --> TRAY[Ícones da bandeja<br/>desenhados com GDI]
+    EST --> UI[WebView do painel<br/>criado sob demanda]
     EST --> DISK[(history.json)]
 ```
 
-- `monitor.rs` keeps every HID handle open, polls slowly (30 s) and listens in between for
-  unsolicited reports: battery broadcasts, the receiver's connect notification when a mouse
-  wakes up, headset power events. Changes show up immediately without fast polling.
-- `estimate.rs` records samples per device and blends the rated battery life with the drain
-  observed over the last 24 active hours, weighted by how much has been measured.
-- The UI is plain HTML, CSS and JavaScript. No framework, no bundler.
+- `monitor.rs` mantém os handles HID abertos, faz polling lento (30 s) e entre um e outro escuta
+  os reports espontâneos: bateria enviada pelo próprio dispositivo, a notificação do receptor
+  quando o mouse acorda, eventos de liga/desliga do headset. As mudanças aparecem na hora sem
+  polling rápido.
+- `estimate.rs` guarda amostras por dispositivo e mistura a autonomia oficial com o consumo
+  observado nas últimas 24 horas ativas, ponderado por quanto já foi medido.
+- "Ligado há" só aparece quando o Pulso viu o dispositivo ligar; antes disso o painel mostra
+  "Ativo há" (desde que o Pulso o encontrou).
+- A interface é HTML, CSS e JavaScript puros. Sem framework, sem bundler.
 
-## Build from source
+## Compilar do código
 
-Requirements: Rust (MSVC toolchain). Node.js is only needed to produce the installer.
+Requisitos: Rust (toolchain MSVC). Node.js só para gerar o instalador.
 
 ```powershell
-cargo test --lib                 # protocol parsers and estimate model
-cargo run --bin probe            # read every supported device and print what was found
-cargo run --bin probe -- --all   # also list every HID collection (for device requests)
-cargo run                        # the app, debug build, logs readings to the console
-npx @tauri-apps/cli@2 build      # release build + installer in target/release/bundle/nsis
+cargo test --lib                 # parsers de protocolo e modelo de estimativa
+cargo run --bin probe            # lê todos os dispositivos suportados e mostra o resultado
+cargo run --bin probe -- --all   # também lista todas as coleções HID (para pedidos de dispositivo)
+cargo run                        # o app em debug, imprime as leituras no console
+npx @tauri-apps/cli@2 build      # release + instalador em target/release/bundle/nsis
 ```
 
-`dev/preview.html` renders the panel with mock devices in a normal browser
-(`node dev/serve.mjs`), handy for UI work without hardware.
+O `dev/preview.html` renderiza o painel com dispositivos falsos num navegador comum
+(`node dev/serve.mjs`), útil para mexer na interface sem hardware.
 
 ## Roadmap
 
-Ideas that are open for anyone to pick up. Check the
-[issues](https://github.com/alanaraujo-bit/pulso/issues) for the current list.
+Ideias abertas para qualquer pessoa pegar. A lista atual está nas
+[issues](https://github.com/alanaraujo-bit/pulso/issues).
 
-- English UI and translations (the panel is Portuguese today)
-- Bluetooth LE devices through the standard GATT Battery Service
-- Razer, SteelSeries, Corsair and HyperX protocols
-- Battery history chart per device
-- Signed installer and auto-update
+- Interface em inglês e traduções
+- Dispositivos Bluetooth LE pelo GATT Battery Service padrão
+- Protocolos Razer, SteelSeries, Corsair e HyperX
+- Gráfico do histórico de bateria por dispositivo
+- Instalador assinado e atualização automática
 
-## Contributing
+## Contribuindo
 
-Bug reports, device data, protocol work and design feedback are all welcome.
-Read [CONTRIBUTING.md](CONTRIBUTING.md) to get set up, or jump into
-[Discussions](https://github.com/alanaraujo-bit/pulso/discussions) to ask anything.
+Relatos de bug, dados de dispositivos, protocolos novos e feedback de design são todos bem-vindos.
+Issues e PRs podem ser em português ou inglês. Comece pelo [CONTRIBUTING.md](CONTRIBUTING.md)
+ou chegue nas [Discussions](https://github.com/alanaraujo-bit/pulso/discussions) para perguntar
+qualquer coisa.
 
-## Credits
+## Créditos
 
-Protocol layouts were learned from the public documentation of
-[HeadsetControl](https://github.com/Sapd/HeadsetControl) (Centurion) and
-[vigil-watt](https://github.com/evren-oct/vigil-watt) (CompX dongles). No code was copied.
-Pulso is not affiliated with Logitech, AULA or any other manufacturer.
+Os formatos de protocolo foram aprendidos da documentação pública do
+[HeadsetControl](https://github.com/Sapd/HeadsetControl) (Centurion) e do
+[vigil-watt](https://github.com/evren-oct/vigil-watt) (dongles CompX). Nenhum código foi copiado.
+O Pulso não tem vínculo com Logitech, AULA ou qualquer fabricante.
 
-## License
+## Licença
 
 [MIT](LICENSE)

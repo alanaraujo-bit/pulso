@@ -1,9 +1,10 @@
-# Security
+# Segurança
 
-Pulso runs on your desktop and talks to USB HID devices, so security reports matter.
+O Pulso roda no seu computador e conversa com dispositivos USB HID, então relatos de segurança
+importam.
 
-Please **do not open a public issue** for a vulnerability. Report it privately through
-[GitHub security advisories](https://github.com/alanaraujo-bit/pulso/security/advisories/new).
-You will get a reply as soon as a maintainer can look at it.
+**Não abra issue pública** para uma vulnerabilidade. Relate em particular pelos
+[avisos de segurança do GitHub](https://github.com/alanaraujo-bit/pulso/security/advisories/new).
+Um mantenedor responde assim que puder.
 
-Only the latest release is supported with fixes.
+Só a versão mais recente recebe correções.

@@ -1,37 +1,37 @@
-name: Bug report
-description: Something looks wrong or broke
+name: Relato de bug
+description: Algo está errado ou quebrou
 labels: ["bug"]
 body:
   - type: textarea
     id: what
     attributes:
-      label: What happened
-      description: And what you expected instead. Screenshots help a lot.
+      label: O que aconteceu
+      description: E o que você esperava. Prints ajudam muito.
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce
+      label: Como reproduzir
       placeholder: |
-        1. Plug the headset cable in
-        2. Open the panel
-        3. It still says "Em uso" instead of charging
+        1. Liguei o cabo do headset
+        2. Abri o painel
+        3. Continua "Em uso" em vez de carregando
   - type: input
     id: devices
     attributes:
-      label: Devices involved
+      label: Dispositivos envolvidos
       placeholder: Logitech PRO X 2 LIGHTSPEED, AULA F75
   - type: input
     id: version
     attributes:
-      label: Pulso version and Windows build
+      label: Versão do Pulso e build do Windows
       placeholder: Pulso 0.1.0, Windows 11 26100
     validations:
       required: true
   - type: textarea
     id: probe
     attributes:
-      label: Probe output (if it is a device reading problem)
-      description: "`cargo run --bin probe` with the device awake."
+      label: Saída do probe (se for problema de leitura)
+      description: "`cargo run --bin probe` com o dispositivo acordado."
       render: text

@@ -1,14 +1,14 @@
-## What and why
+## O que e por quê
 
-<!-- One topic per PR. Link the issue: Closes #123 -->
+<!-- Um assunto por PR. Vincule a issue: Closes #123 -->
 
-## Tested on
+## Testado em
 
-<!-- Hardware and Windows build. For protocol work, paste the real frames you used. -->
+<!-- Hardware e build do Windows. Em trabalho de protocolo, cole os frames reais usados. -->
 
 ## Checklist
 
-- [ ] `cargo fmt`, `cargo clippy --all-targets -- -D warnings` and `cargo test --lib` pass
-- [ ] New parsers have tests with real captured frames
-- [ ] Device code stays read-only (no settings written)
-- [ ] UI changes include a before/after screenshot
+- [ ] `cargo fmt`, `cargo clippy --all-targets -- -D warnings` e `cargo test --lib` passam
+- [ ] Parsers novos têm testes com frames reais capturados
+- [ ] O código de dispositivo continua somente leitura (nenhuma configuração gravada)
+- [ ] Mudança visual inclui print de antes e depois

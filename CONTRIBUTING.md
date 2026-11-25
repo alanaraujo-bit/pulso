@@ -1,65 +1,67 @@
-# Contributing to Pulso
+# Contribuindo com o Pulso
 
-Thanks for helping. Issues and pull requests are welcome in **English or Portuguese**.
+Valeu por ajudar! Issues e pull requests são bem-vindos em **português ou inglês**.
 
-## Ways to help
+## Formas de ajudar
 
-| You have | Do this |
+| Você tem | Faça isso |
 |---|---|
-| A device Pulso does not read | Open a [device request](https://github.com/alanaraujo-bit/pulso/issues/new?template=device-support.yml) with the probe output. No code needed. |
-| A device that reads wrong (percent, charging, asleep) | Open a [bug report](https://github.com/alanaraujo-bit/pulso/issues/new?template=bug.yml) and compare with the official app. |
-| Time to code | Pick an issue labeled [`good first issue`](https://github.com/alanaraujo-bit/pulso/labels/good%20first%20issue) or [`help wanted`](https://github.com/alanaraujo-bit/pulso/labels/help%20wanted), or add a protocol following [the guide](docs/adding-a-device.md). |
-| Design or language skills | Translations, panel polish, icons. Start a thread in Discussions first. |
+| Um dispositivo que o Pulso não lê | Abra um [pedido de dispositivo](https://github.com/alanaraujo-bit/pulso/issues/new?template=device-support.yml) com a saída do probe. Não precisa programar. |
+| Um dispositivo com leitura errada (porcentagem, carregando, repouso) | Abra um [relato de bug](https://github.com/alanaraujo-bit/pulso/issues/new?template=bug.yml) comparando com o app oficial. |
+| Tempo para programar | Pegue uma issue com [`good first issue`](https://github.com/alanaraujo-bit/pulso/labels/good%20first%20issue) ou [`help wanted`](https://github.com/alanaraujo-bit/pulso/labels/help%20wanted), ou adicione um protocolo seguindo [o guia](docs/adicionar-dispositivo.md). |
+| Talento para design ou idiomas | Traduções, acabamento do painel, ícones. Comece uma conversa nas Discussions. |
 
-## Setup
+## Ambiente
 
-- Windows 11, [Rust](https://rustup.rs) with the MSVC toolchain.
-- Node.js only if you want to build the installer.
+- Windows 11 e [Rust](https://rustup.rs) com a toolchain MSVC.
+- Node.js só se quiser gerar o instalador.
 
 ```powershell
 git clone https://github.com/alanaraujo-bit/pulso
 cd pulso
 cargo test --lib
-cargo run              # debug build, prints every reading to the console
+cargo run              # build de debug, imprime cada leitura no console
 ```
 
-Run only one Pulso at a time: a second launch just opens the running instance's panel.
+Rode um Pulso por vez: abrir de novo só mostra o painel da instância que já está rodando.
 
-## Project layout
+## Estrutura do projeto
 
 ```
 src/
-  hidpp.rs       Logitech HID++ 2.0 (receivers and wired devices)
-  centurion.rs   Logitech Centurion (recent LIGHTSPEED headsets)
-  compx.rs       CompX 2.4 GHz keyboard dongles (AULA and others)
-  monitor.rs     background thread: owns HID handles, slow polling, event listening
-  estimate.rs    per-device history, runtime / charge-time model, alerts
-  model.rs       shared types (Reading, BatterySample, Kind, Charge)
-  sys.rs         Win32: tray glyph rendering, theme, autostart, tray promotion, DWM corners
-  main.rs        Tauri app: tray icons, panel window lifecycle, commands
-  bin/probe.rs   hardware diagnostics
-ui/              panel (plain HTML, CSS, JS)
-dev/             mock preview of the panel for UI work without hardware
-docs/            guides and README assets
+  hidpp.rs       Logitech HID++ 2.0 (receptores e dispositivos com cabo)
+  centurion.rs   Logitech Centurion (headsets LIGHTSPEED recentes)
+  compx.rs       dongles 2.4 GHz CompX (AULA e outros)
+  monitor.rs     thread em segundo plano: handles HID, polling lento, escuta de eventos
+  estimate.rs    histórico por dispositivo, modelo de autonomia e carga, alertas
+  model.rs       tipos compartilhados (Reading, BatterySample, Kind, Charge)
+  sys.rs         Win32: desenho do ícone da bandeja, tema, autostart, promoção do ícone, cantos DWM
+  main.rs        app Tauri: ícones da bandeja, ciclo de vida do painel, comandos
+  bin/probe.rs   diagnóstico de hardware
+ui/              painel (HTML, CSS e JS puros)
+dev/             preview do painel com dados falsos, para mexer na interface sem hardware
+docs/            guias e imagens do README
 ```
 
-Data flow: protocol modules turn HID reports into `Reading`s, `monitor.rs` emits them,
-`estimate.rs` turns them into `DeviceView`s, and `main.rs` pushes those to the tray and the panel.
+Fluxo dos dados: os módulos de protocolo transformam reports HID em `Reading`s, o `monitor.rs`
+os emite, o `estimate.rs` os transforma em `DeviceView`s e o `main.rs` entrega isso para a
+bandeja e para o painel.
 
-## Guidelines
+## Diretrizes
 
-- **Small, complete changes.** Solve the whole problem with the least new code. Reuse what the
-  codebase already has before adding a dependency.
-- **Protocol code is read-only.** Never send commands that change device settings. If a battery
-  query needs a write (like a session-open frame), document why in the module header.
-- **Every parser gets a test with real frames** captured from hardware. Put the hex in the test.
-- **Never call a window API while holding the state mutex** in `main.rs`: moving or resizing the
-  window fires events synchronously and their handlers take the same lock.
-- **Comments explain why**, not what.
-- Keep it light: the resting app must stay a single small process. Measure RAM and CPU if your
-  change touches the monitor loop or the panel lifecycle.
+- **Mudanças pequenas e completas.** Resolva o problema inteiro com o mínimo de código novo.
+  Reaproveite o que já existe no projeto antes de adicionar uma dependência.
+- **Código de protocolo é somente leitura.** Nunca envie comandos que mudem configurações do
+  dispositivo. Se a consulta de bateria exigir uma escrita (como abrir uma sessão), explique o
+  porquê no cabeçalho do módulo.
+- **Todo parser tem teste com frames reais** capturados do hardware. Coloque o hex no teste.
+- **Nunca chame API de janela segurando o mutex de estado** no `main.rs`: mover ou redimensionar a
+  janela dispara eventos síncronos cujos handlers pegam o mesmo lock.
+- **Comentários explicam o porquê**, não o quê.
+- Mantenha leve: o app em repouso precisa continuar sendo um processo pequeno. Meça RAM e CPU se
+  a mudança mexer no loop do monitor ou no ciclo de vida do painel.
 
-Before opening a PR:
+Antes de abrir o PR:
 
 ```powershell
 cargo fmt
@@ -67,20 +69,20 @@ cargo clippy --all-targets -- -D warnings
 cargo test --lib
 ```
 
-CI runs the same three on Windows.
+O CI roda os mesmos três no Windows.
 
-## Commits and pull requests
+## Commits e pull requests
 
-- [Conventional Commits](https://www.conventionalcommits.org): `feat:`, `fix:`, `docs:`,
-  `refactor:`, `chore:`. Example: `feat(compx): read battery from MCHOSE G75`.
-- One topic per PR. Describe what you tested and on which hardware.
-- UI changes: add a before/after screenshot.
+- [Conventional Commits](https://www.conventionalcommits.org/pt-br/): `feat:`, `fix:`, `docs:`,
+  `refactor:`, `chore:`. Exemplo: `feat(compx): ler bateria do MCHOSE G75`.
+- Um assunto por PR. Descreva o que testou e em qual hardware.
+- Mudança visual: inclua print de antes e depois.
 
-## Releases
+## Versões
 
-Maintainers tag `vX.Y.Z`; the release workflow builds the installer and attaches it to a
-GitHub release.
+Os mantenedores criam a tag `vX.Y.Z`; o workflow de release gera o instalador e publica no
+GitHub Releases.
 
-## Code of conduct
+## Código de conduta
 
-Be kind and assume good faith. See [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+Seja gentil e assuma boa-fé. Veja o [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).

@@ -1,52 +1,52 @@
-name: Device request
-description: Ask Pulso to read a mouse, keyboard or headset it does not support yet
-title: "[device] <brand and exact model>"
+name: Pedido de dispositivo
+description: Peça para o Pulso ler um mouse, teclado ou headset que ainda não é suportado
+title: "[dispositivo] <marca e modelo exato>"
 labels: ["device request"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks! Good data here is often all a contributor needs to add the device.
-        Pedidos em português também são bem-vindos.
+        Valeu! Dados bons aqui muitas vezes são tudo que alguém precisa para adicionar o dispositivo.
+        Requests in English are welcome too.
   - type: input
     id: model
     attributes:
-      label: Brand and exact model
-      description: Include suffixes like Pro, Max, SE, generation or hardware revision.
+      label: Marca e modelo exato
+      description: Inclua sufixos como Pro, Max, SE, geração ou revisão de hardware.
       placeholder: Razer DeathAdder V3 Pro
     validations:
       required: true
   - type: dropdown
     id: connection
     attributes:
-      label: Connection
+      label: Conexão
       options:
-        - 2.4 GHz receiver / dongle
+        - Receptor / dongle 2.4 GHz
         - Bluetooth
-        - USB cable
-        - More than one (tell us below)
+        - Cabo USB
+        - Mais de uma (explique abaixo)
     validations:
       required: true
   - type: textarea
     id: official
     attributes:
-      label: Where the battery shows today
-      description: Pulso can only read what the device reports. Which official app or web driver shows the battery, and what does it show right now?
-      placeholder: Razer Synapse 4 shows 72%, not charging.
+      label: Onde a bateria aparece hoje
+      description: O Pulso só lê o que o dispositivo informa. Qual app oficial ou driver web mostra a bateria, e o que ele mostra agora?
+      placeholder: O Razer Synapse 4 mostra 72%, sem carregar.
     validations:
       required: true
   - type: textarea
     id: probe
     attributes:
-      label: Probe output
+      label: Saída do probe
       description: |
-        With the device on and awake, run `cargo run --bin probe -- --all` (or `pulso-probe.exe --all` from a release) and paste everything.
-        It only lists HID collections and never writes to unknown devices.
+        Com o dispositivo ligado e acordado, rode `cargo run --bin probe -- --all` (ou `pulso-probe.exe --all`, que vem em cada release) e cole tudo.
+        Ele só lista as coleções HID e nunca escreve em dispositivos desconhecidos.
       render: text
     validations:
       required: true
   - type: textarea
     id: extra
     attributes:
-      label: Anything else
-      description: Links to open-source projects that already read this device, USB captures, firmware version.
+      label: Algo mais
+      description: Links de projetos open source que já leem esse dispositivo, capturas USB, versão de firmware.
