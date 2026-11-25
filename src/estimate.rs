@@ -146,7 +146,7 @@ impl Track {
                 self.unplugged_at = Some(now);
             }
         }
-        let changed = last.is_none_or(|l|l.pct != s.percent || l.charge != s.charge || now - l.t > 15 * 60);
+        let changed = last.is_none_or(|l| l.pct != s.percent || l.charge != s.charge || now - l.t > 15 * 60);
         if changed {
             self.samples.push_back(Sample { t: now, pct: s.percent, charge: s.charge, active: self.active_total });
             while self.samples.len() > MAX_SAMPLES {
@@ -159,11 +159,8 @@ impl Track {
     fn segment(&self) -> impl Iterator<Item = &Sample> {
         let Some(last) = self.samples.back() else { return self.samples.range(0..0) };
         let charging = last.charge != Charge::Discharging;
-        let start = self
-            .samples
-            .iter()
-            .rposition(|s| (s.charge != Charge::Discharging) != charging)
-            .map_or(0, |i| i + 1);
+        let start =
+            self.samples.iter().rposition(|s| (s.charge != Charge::Discharging) != charging).map_or(0, |i| i + 1);
         self.samples.range(start..)
     }
 
@@ -245,12 +242,20 @@ impl Tracker {
         let mut v: Vec<DeviceView> = self
             .devices
             .iter()
-            .filter(|(_, t)| {
-                if t.samples.is_empty() { now - t.last_poll < 120 } else { now - t.last_online < 30 * 86400 }
-            })
+            .filter(
+                |(_, t)| {
+                    if t.samples.is_empty() {
+                        now - t.last_poll < 120
+                    } else {
+                        now - t.last_online < 30 * 86400
+                    }
+                },
+            )
             .map(|(id, t)| t.view(id, now))
             .collect();
-        v.sort_by(|a, b| b.online.cmp(&a.online).then(kind_rank(a.kind).cmp(&kind_rank(b.kind))).then(a.name.cmp(&b.name)));
+        v.sort_by(|a, b| {
+            b.online.cmp(&a.online).then(kind_rank(a.kind).cmp(&kind_rank(b.kind))).then(a.name.cmp(&b.name))
+        });
         v
     }
 }

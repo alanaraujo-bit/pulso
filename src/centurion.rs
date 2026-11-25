@@ -154,7 +154,8 @@ impl Headset {
         let b = self.bridge_index()?;
         let sub_fsw = (function & 0xF0) | SW_ID;
         let size = 3 + params.len();
-        let mut payload = vec![b, BRIDGE_FN_SEND | SW_ID, ((size >> 8) & 0x0F) as u8, size as u8, 0x00, sub_index, sub_fsw];
+        let mut payload =
+            vec![b, BRIDGE_FN_SEND | SW_ID, ((size >> 8) & 0x0F) as u8, size as u8, 0x00, sub_index, sub_fsw];
         payload.extend_from_slice(params);
         self.dev.write(&frame(&self.prefix, &payload, 0))?;
 
@@ -165,7 +166,11 @@ impl Headset {
             let Some(reply) = self.read(left, &mut buf)? else { continue };
             // Dongle rejected the bridge send (headset off).
             if reply.len() >= 3 && reply[0] == 0xFF && reply[1] == b && reply[2] == BRIDGE_FN_SEND | SW_ID {
-                return Err(if self.headset_connected()? { Error::Protocol("bridge rejected") } else { Error::Offline });
+                return Err(if self.headset_connected()? {
+                    Error::Protocol("bridge rejected")
+                } else {
+                    Error::Offline
+                });
             }
             if reply.len() >= 4 && reply[0] == b && reply[1] == 0x00 {
                 if reply[3] == 0 {

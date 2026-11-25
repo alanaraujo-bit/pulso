@@ -30,7 +30,11 @@ pub fn frame(cmd: u8, param: u8) -> [u8; LEN] {
 
 fn flags_to_charge(pct: u8, flags: u8) -> Charge {
     if flags & 0x10 != 0 {
-        if pct >= 100 { Charge::Full } else { Charge::Charging }
+        if pct >= 100 {
+            Charge::Full
+        } else {
+            Charge::Charging
+        }
     } else {
         Charge::Discharging
     }
@@ -54,7 +58,9 @@ pub fn parse(input: &[u8]) -> Frame {
     match f[1] {
         CMD_SESSION if f.len() >= 11 && f[4] == 0x0A => Frame::Ack(u16::from_be_bytes([f[9], f[10]])),
         CMD_PUSH if f[5] == PUSH_BATTERY => match f[6] {
-            2..=100 => Frame::Battery(BatterySample { percent: f[6], charge: flags_to_charge(f[6], f[7]), voltage_mv: None }),
+            2..=100 => {
+                Frame::Battery(BatterySample { percent: f[6], charge: flags_to_charge(f[6], f[7]), voltage_mv: None })
+            }
             _ => Frame::Asleep,
         },
         CMD_PUSH if f[5] == 0x02 => Frame::Asleep,

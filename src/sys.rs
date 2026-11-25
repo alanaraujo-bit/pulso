@@ -48,7 +48,22 @@ pub fn render_glyph(text: &str, rgb: [u8; 3], alpha: f32, size: u32) -> Vec<u8> 
         // Largest font whose ink fits the square with a hair of margin.
         let mut h = big * 105 / 100;
         let font = loop {
-            let f = CreateFontW(-h, 0, 0, 0, 700, 0, 0, 0, DEFAULT_CHARSET, OUT_TT_PRECIS, CLIP_DEFAULT_PRECIS, NONANTIALIASED_QUALITY, 0, w!("Segoe UI Variable Display"));
+            let f = CreateFontW(
+                -h,
+                0,
+                0,
+                0,
+                700,
+                0,
+                0,
+                0,
+                DEFAULT_CHARSET,
+                OUT_TT_PRECIS,
+                CLIP_DEFAULT_PRECIS,
+                NONANTIALIASED_QUALITY,
+                0,
+                w!("Segoe UI Variable Display"),
+            );
             let prev = SelectObject(hdc, f.into());
             let mut sz = Default::default();
             let _ = GetTextExtentPoint32W(hdc, &wide, &mut sz);
@@ -123,7 +138,11 @@ fn reg_dword(root: HKEY, key: PCWSTR, name: PCWSTR) -> Option<u32> {
 
 /// True when the taskbar uses the light theme (glyphs must be dark).
 pub fn taskbar_is_light() -> bool {
-    reg_dword(HKEY_CURRENT_USER, w!(r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"), w!("SystemUsesLightTheme")) == Some(1)
+    reg_dword(
+        HKEY_CURRENT_USER,
+        w!(r"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"),
+        w!("SystemUsesLightTheme"),
+    ) == Some(1)
 }
 
 const RUN_KEY: PCWSTR = w!(r"Software\Microsoft\Windows\CurrentVersion\Run");
@@ -154,14 +173,17 @@ pub fn promote_tray_icons() {
     let exe = exe.to_string_lossy().to_lowercase();
     unsafe {
         let mut root = HKEY::default();
-        if RegOpenKeyExW(HKEY_CURRENT_USER, w!(r"Control Panel\NotifyIconSettings"), None, KEY_READ, &mut root).is_err() {
+        if RegOpenKeyExW(HKEY_CURRENT_USER, w!(r"Control Panel\NotifyIconSettings"), None, KEY_READ, &mut root).is_err()
+        {
             return;
         }
         let mut i = 0;
         loop {
             let mut name = [0u16; 64];
             let mut len = name.len() as u32;
-            if RegEnumKeyExW(root, i, Some(windows::core::PWSTR(name.as_mut_ptr())), &mut len, None, None, None, None).is_err() {
+            if RegEnumKeyExW(root, i, Some(windows::core::PWSTR(name.as_mut_ptr())), &mut len, None, None, None, None)
+                .is_err()
+            {
                 break;
             }
             i += 1;
@@ -172,7 +194,16 @@ pub fn promote_tray_icons() {
             }
             let mut buf = [0u16; 520];
             let mut blen = (buf.len() * 2) as u32;
-            let ok = RegGetValueW(sub, None, w!("ExecutablePath"), RRF_RT_REG_SZ, None, Some(buf.as_mut_ptr() as *mut _), Some(&mut blen)).is_ok();
+            let ok = RegGetValueW(
+                sub,
+                None,
+                w!("ExecutablePath"),
+                RRF_RT_REG_SZ,
+                None,
+                Some(buf.as_mut_ptr() as *mut _),
+                Some(&mut blen),
+            )
+            .is_ok();
             if ok {
                 let path = String::from_utf16_lossy(&buf[..(blen as usize / 2).saturating_sub(1)]).to_lowercase();
                 if path == exe {

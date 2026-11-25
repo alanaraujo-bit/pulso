@@ -105,7 +105,14 @@ pub fn run(cmds: Receiver<Command>, mut emit: impl FnMut(Vec<Reading>)) {
                     } else if centurion::is_headset(d) {
                         if let Ok(h) = d.open_device(&api) {
                             let name = d.product_string().unwrap_or("Headset").trim().to_string();
-                            headsets.push(HeadsetT { path, name, hs: centurion::Headset::new(h), online: false, misses: 0, next_poll: now });
+                            headsets.push(HeadsetT {
+                                path,
+                                name,
+                                hs: centurion::Headset::new(h),
+                                online: false,
+                                misses: 0,
+                                next_poll: now,
+                            });
                         }
                     } else if compx::is_dongle(d) {
                         if let Ok(h) = d.open_device(&api) {
@@ -120,7 +127,13 @@ pub fn run(cmds: Receiver<Command>, mut emit: impl FnMut(Vec<Reading>)) {
         // A transport that fails I/O was unplugged: drop it and report its devices offline.
         headsets.retain_mut(|h| {
             poll_headset(h, force, &mut out).is_ok() || {
-                out.push(Reading { id: lg_id(&h.name), name: h.name.clone(), kind: Kind::Headset, online: false, sample: None });
+                out.push(Reading {
+                    id: lg_id(&h.name),
+                    name: h.name.clone(),
+                    kind: Kind::Headset,
+                    online: false,
+                    sample: None,
+                });
                 false
             }
         });
@@ -129,7 +142,13 @@ pub fn run(cmds: Receiver<Command>, mut emit: impl FnMut(Vec<Reading>)) {
         }
         dongles.retain_mut(|d| {
             poll_dongle(d, force, &mut out).is_ok() || {
-                out.push(Reading { id: "compx:fa09".into(), name: String::new(), kind: Kind::Keyboard, online: false, sample: None });
+                out.push(Reading {
+                    id: "compx:fa09".into(),
+                    name: String::new(),
+                    kind: Kind::Keyboard,
+                    online: false,
+                    sample: None,
+                });
                 false
             }
         });
@@ -140,7 +159,13 @@ pub fn run(cmds: Receiver<Command>, mut emit: impl FnMut(Vec<Reading>)) {
             poll_receiver(r, force, &mut out).is_ok() || {
                 for (_, slot) in &r.slots {
                     if let Slot::Known(d) = slot {
-                        out.push(Reading { id: lg_id(&d.name), name: d.name.clone(), kind: d.kind, online: false, sample: None });
+                        out.push(Reading {
+                            id: lg_id(&d.name),
+                            name: d.name.clone(),
+                            kind: d.kind,
+                            online: false,
+                            sample: None,
+                        });
                     }
                 }
                 false
@@ -189,7 +214,13 @@ fn poll_receiver(r: &mut Receiver_, force: bool, out: &mut Vec<Reading>) -> Resu
                 };
                 if let Some(sample) = reading {
                     d.online = sample.is_some();
-                    out.push(Reading { id: lg_id(&d.name), name: d.name.clone(), kind: d.kind, online: d.online, sample });
+                    out.push(Reading {
+                        id: lg_id(&d.name),
+                        name: d.name.clone(),
+                        kind: d.kind,
+                        online: d.online,
+                        sample,
+                    });
                 }
                 d.next_poll = now + if d.online { POLL_ONLINE } else { POLL_OFFLINE };
             }
@@ -218,12 +249,24 @@ fn poll_receiver(r: &mut Receiver_, force: bool, out: &mut Vec<Reading>) -> Resu
             } else if d.online {
                 d.online = false;
                 d.next_poll = now + POLL_OFFLINE;
-                out.push(Reading { id: lg_id(&d.name), name: d.name.clone(), kind: d.kind, online: false, sample: None });
+                out.push(Reading {
+                    id: lg_id(&d.name),
+                    name: d.name.clone(),
+                    kind: d.kind,
+                    online: false,
+                    sample: None,
+                });
             }
         } else if ev.feature_index == d.battery.index() && ev.function == 0 && ev.data.len() >= 4 {
             if let Some(s) = hidpp::parse_battery(d.battery, &ev.data) {
                 d.online = true;
-                out.push(Reading { id: lg_id(&d.name), name: d.name.clone(), kind: d.kind, online: true, sample: Some(s) });
+                out.push(Reading {
+                    id: lg_id(&d.name),
+                    name: d.name.clone(),
+                    kind: d.kind,
+                    online: true,
+                    sample: Some(s),
+                });
             }
         } else {
             // Any traffic from a device that looked offline means it is back: poll soon.
@@ -243,18 +286,36 @@ fn poll_headset(h: &mut HeadsetT, force: bool, out: &mut Vec<Reading>) -> Result
             Ok(s) => {
                 h.online = true;
                 h.misses = 0;
-                out.push(Reading { id: id.clone(), name: h.name.clone(), kind: Kind::Headset, online: true, sample: Some(s) });
+                out.push(Reading {
+                    id: id.clone(),
+                    name: h.name.clone(),
+                    kind: Kind::Headset,
+                    online: true,
+                    sample: Some(s),
+                });
             }
             Err(centurion::Error::Io(_)) => return Err(()),
             Err(centurion::Error::Offline) => {
                 h.online = false;
-                out.push(Reading { id: id.clone(), name: h.name.clone(), kind: Kind::Headset, online: false, sample: None });
+                out.push(Reading {
+                    id: id.clone(),
+                    name: h.name.clone(),
+                    kind: Kind::Headset,
+                    online: false,
+                    sample: None,
+                });
             }
             Err(_) => {
                 h.misses += 1;
                 if h.misses >= 2 && h.online {
                     h.online = false;
-                    out.push(Reading { id: id.clone(), name: h.name.clone(), kind: Kind::Headset, online: false, sample: None });
+                    out.push(Reading {
+                        id: id.clone(),
+                        name: h.name.clone(),
+                        kind: Kind::Headset,
+                        online: false,
+                        sample: None,
+                    });
                 }
             }
         }
@@ -266,11 +327,23 @@ fn poll_headset(h: &mut HeadsetT, force: bool, out: &mut Vec<Reading>) -> Result
             centurion::Event::Connection(true) => h.next_poll = now + Duration::from_secs(2),
             centurion::Event::Connection(false) => {
                 h.online = false;
-                out.push(Reading { id: id.clone(), name: h.name.clone(), kind: Kind::Headset, online: false, sample: None });
+                out.push(Reading {
+                    id: id.clone(),
+                    name: h.name.clone(),
+                    kind: Kind::Headset,
+                    online: false,
+                    sample: None,
+                });
             }
             centurion::Event::Battery(s) => {
                 h.online = true;
-                out.push(Reading { id: id.clone(), name: h.name.clone(), kind: Kind::Headset, online: true, sample: Some(s) });
+                out.push(Reading {
+                    id: id.clone(),
+                    name: h.name.clone(),
+                    kind: Kind::Headset,
+                    online: true,
+                    sample: Some(s),
+                });
             }
         }
     }

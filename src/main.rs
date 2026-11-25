@@ -99,7 +99,9 @@ fn tooltip(v: &DeviceView) -> String {
         "em repouso".to_string()
     } else {
         match v.charge {
-            Some(Charge::Charging) => v.to_full.map_or("carregando".into(), |s| format!("carregando · cheio em {}", pulso::estimate::human(s))),
+            Some(Charge::Charging) => v
+                .to_full
+                .map_or("carregando".into(), |s| format!("carregando · cheio em {}", pulso::estimate::human(s))),
             Some(Charge::Full) => "carregado".into(),
             _ => v.remaining.map_or(String::new(), |s| format!("~{} de uso", pulso::estimate::human(s))),
         }
@@ -111,8 +113,20 @@ fn glyph(v: &DeviceView, light: bool, size: u32) -> Image<'static> {
     let text = v.percent.map_or("–".to_string(), |p| p.to_string());
     let base = if light { [0x1C, 0x1C, 0x1E] } else { [0xFF, 0xFF, 0xFF] };
     let rgb = match (v.charge, v.percent) {
-        (Some(Charge::Charging), _) => if light { [0x1A, 0x9E, 0x4B] } else { [0x4A, 0xE0, 0x82] },
-        (_, Some(p)) if p <= 15 => if light { [0xD7, 0x26, 0x1E] } else { [0xFF, 0x5A, 0x4F] },
+        (Some(Charge::Charging), _) => {
+            if light {
+                [0x1A, 0x9E, 0x4B]
+            } else {
+                [0x4A, 0xE0, 0x82]
+            }
+        }
+        (_, Some(p)) if p <= 15 => {
+            if light {
+                [0xD7, 0x26, 0x1E]
+            } else {
+                [0xFF, 0x5A, 0x4F]
+            }
+        }
         _ => base,
     };
     let alpha = if v.online { 1.0 } else { 0.42 };
@@ -144,7 +158,11 @@ fn sync_trays(app: &AppHandle, ctx: &Ctx, st: &mut State) {
                 (glyph(v, light, size), tooltip(v), key)
             }
             None => {
-                let icon = app.default_window_icon().cloned().map(|i| i.to_owned()).unwrap_or_else(|| Image::new_owned(vec![0; 4], 1, 1));
+                let icon = app
+                    .default_window_icon()
+                    .cloned()
+                    .map(|i| i.to_owned())
+                    .unwrap_or_else(|| Image::new_owned(vec![0; 4], 1, 1));
                 (icon, "Pulso".to_string(), "main".to_string())
             }
         };
@@ -163,7 +181,13 @@ fn sync_trays(app: &AppHandle, ctx: &Ctx, st: &mut State) {
             .menu(&ctx.menu)
             .show_menu_on_left_click(false)
             .on_tray_icon_event(|tray, ev| {
-                if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, rect, .. } = ev {
+                if let TrayIconEvent::Click {
+                    button: MouseButton::Left,
+                    button_state: MouseButtonState::Up,
+                    rect,
+                    ..
+                } = ev
+                {
                     let p = rect.position.to_physical::<f64>(1.0);
                     let s = rect.size.to_physical::<f64>(1.0);
                     toggle_panel(tray.app_handle(), Some((p.x, p.y, s.width, s.height)));
@@ -224,7 +248,12 @@ fn place(app: &AppHandle, win: &WebviewWindow, p: Placement) {
         let (mw, mh) = m.map_or((1920.0, 1080.0), |m| (m.size().width as f64, m.size().height as f64));
         (mw - 120.0, mh - 24.0, 24.0, 24.0)
     });
-    let Some(mon) = app.monitor_from_point(ax + aw / 2.0, ay + ah / 2.0).ok().flatten().or_else(|| win.primary_monitor().ok().flatten()) else {
+    let Some(mon) = app
+        .monitor_from_point(ax + aw / 2.0, ay + ah / 2.0)
+        .ok()
+        .flatten()
+        .or_else(|| win.primary_monitor().ok().flatten())
+    else {
         return;
     };
     let scale = mon.scale_factor();
@@ -248,7 +277,11 @@ fn set_webview_idle(win: &WebviewWindow, idle: bool) {
         let controller = wv.controller();
         let Ok(core) = controller.CoreWebView2() else { return };
         if let Ok(c19) = core.cast::<ICoreWebView2_19>() {
-            let level = if idle { COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW } else { COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL };
+            let level = if idle {
+                COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_LOW
+            } else {
+                COREWEBVIEW2_MEMORY_USAGE_TARGET_LEVEL_NORMAL
+            };
             let _ = c19.SetMemoryUsageTargetLevel(level);
         }
         if let Ok(c3) = core.cast::<ICoreWebView2_3>() {
@@ -389,7 +422,10 @@ fn hide(app: AppHandle, ctx: tauri::State<Arc<Ctx>>) {
     let stamp = Instant::now();
     ctx.state.lock().unwrap().hidden_at = stamp;
     std::thread::spawn(move || {
-        let idle = std::env::var("PULSO_IDLE_SECS").ok().and_then(|s| s.parse().ok()).map_or(IDLE_DESTROY, Duration::from_secs);
+        let idle = std::env::var("PULSO_IDLE_SECS")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .map_or(IDLE_DESTROY, Duration::from_secs);
         std::thread::sleep(idle);
         let h = app.clone();
         let _ = app.run_on_main_thread(move || {
@@ -461,7 +497,9 @@ fn apply_settings(app: &AppHandle, patch: serde_json::Value) {
     if old.mode != new.mode {
         if new.mode == Mode::Floating {
             // Detach in place: an open flyout stays exactly where it is.
-            if let Some(p) = win.as_ref().filter(|w| w.is_visible().unwrap_or(false)).and_then(|w| w.outer_position().ok()) {
+            if let Some(p) =
+                win.as_ref().filter(|w| w.is_visible().unwrap_or(false)).and_then(|w| w.outer_position().ok())
+            {
                 ctx.state.lock().unwrap().settings.pos = Some((p.x, p.y));
             }
             show_panel(app);
@@ -496,9 +534,24 @@ fn main() {
         .setup(move |app| {
             let handle = app.handle().clone();
             let m_open = MenuItem::with_id(app, "open", "Abrir painel", true, None::<&str>)?;
-            let m_floating = CheckMenuItem::with_id(app, "floating", "Painel flutuante", true, settings.mode == Mode::Floating, None::<&str>)?;
-            let m_tray = CheckMenuItem::with_id(app, "tray", "Porcentagem na bandeja", true, settings.tray_icons, None::<&str>)?;
-            let m_autostart = CheckMenuItem::with_id(app, "autostart", "Iniciar com o Windows", true, settings.autostart, None::<&str>)?;
+            let m_floating = CheckMenuItem::with_id(
+                app,
+                "floating",
+                "Painel flutuante",
+                true,
+                settings.mode == Mode::Floating,
+                None::<&str>,
+            )?;
+            let m_tray =
+                CheckMenuItem::with_id(app, "tray", "Porcentagem na bandeja", true, settings.tray_icons, None::<&str>)?;
+            let m_autostart = CheckMenuItem::with_id(
+                app,
+                "autostart",
+                "Iniciar com o Windows",
+                true,
+                settings.autostart,
+                None::<&str>,
+            )?;
             let m_refresh = MenuItem::with_id(app, "refresh", "Atualizar agora", true, None::<&str>)?;
             let m_quit = MenuItem::with_id(app, "quit", "Sair", true, None::<&str>)?;
             let menu = MenuBuilder::new(app)
@@ -566,42 +619,40 @@ fn main() {
 
             // Monitor thread: readings -> history -> views -> UI + tray.
             let h = handle.clone();
-            std::thread::Builder::new()
-                .name("monitor".into())
-                .spawn(move || {
-                    monitor::run(rx, |readings| {
-                        #[cfg(debug_assertions)]
-                        eprintln!("readings: {readings:?}");
-                        let ctx = h.state::<Arc<Ctx>>();
-                        let t = now();
-                        let (views, toasts) = {
-                            let mut st = ctx.state.lock().unwrap();
-                            for r in &readings {
-                                st.tracker.update(r, t);
-                            }
-                            st.views = st.tracker.views(t);
-                            if t - st.last_save > 120 {
-                                st.last_save = t;
-                                save("history.json", &st.tracker);
-                                save("settings.json", &st.settings);
-                            }
-                            let views = st.views.clone();
-                            let toasts: Vec<_> = views.iter().filter_map(|v| st.alerts.check(v)).collect();
-                            (views, toasts)
-                        };
-                        for (title, body) in toasts {
-                            use tauri_plugin_notification::NotificationExt;
-                            let _ = h.notification().builder().title(title).body(body).show();
+            std::thread::Builder::new().name("monitor".into()).spawn(move || {
+                monitor::run(rx, |readings| {
+                    #[cfg(debug_assertions)]
+                    eprintln!("readings: {readings:?}");
+                    let ctx = h.state::<Arc<Ctx>>();
+                    let t = now();
+                    let (views, toasts) = {
+                        let mut st = ctx.state.lock().unwrap();
+                        for r in &readings {
+                            st.tracker.update(r, t);
                         }
-                        let _ = h.emit_to("panel", "devices", &views);
-                        let h2 = h.clone();
-                        let _ = h.run_on_main_thread(move || {
-                            let ctx = h2.state::<Arc<Ctx>>().inner().clone();
-                            let mut st = ctx.state.lock().unwrap();
-                            sync_trays(&h2, &ctx, &mut st);
-                        });
+                        st.views = st.tracker.views(t);
+                        if t - st.last_save > 120 {
+                            st.last_save = t;
+                            save("history.json", &st.tracker);
+                            save("settings.json", &st.settings);
+                        }
+                        let views = st.views.clone();
+                        let toasts: Vec<_> = views.iter().filter_map(|v| st.alerts.check(v)).collect();
+                        (views, toasts)
+                    };
+                    for (title, body) in toasts {
+                        use tauri_plugin_notification::NotificationExt;
+                        let _ = h.notification().builder().title(title).body(body).show();
+                    }
+                    let _ = h.emit_to("panel", "devices", &views);
+                    let h2 = h.clone();
+                    let _ = h.run_on_main_thread(move || {
+                        let ctx = h2.state::<Arc<Ctx>>().inner().clone();
+                        let mut st = ctx.state.lock().unwrap();
+                        sync_trays(&h2, &ctx, &mut st);
                     });
-                })?;
+                });
+            })?;
 
             if settings.mode == Mode::Floating || first_run {
                 let h = handle.clone();

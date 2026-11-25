@@ -1,0 +1,52 @@
+name: Device request
+description: Ask Pulso to read a mouse, keyboard or headset it does not support yet
+title: "[device] <brand and exact model>"
+labels: ["device request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Good data here is often all a contributor needs to add the device.
+        Pedidos em português também são bem-vindos.
+  - type: input
+    id: model
+    attributes:
+      label: Brand and exact model
+      description: Include suffixes like Pro, Max, SE, generation or hardware revision.
+      placeholder: Razer DeathAdder V3 Pro
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Connection
+      options:
+        - 2.4 GHz receiver / dongle
+        - Bluetooth
+        - USB cable
+        - More than one (tell us below)
+    validations:
+      required: true
+  - type: textarea
+    id: official
+    attributes:
+      label: Where the battery shows today
+      description: Pulso can only read what the device reports. Which official app or web driver shows the battery, and what does it show right now?
+      placeholder: Razer Synapse 4 shows 72%, not charging.
+    validations:
+      required: true
+  - type: textarea
+    id: probe
+    attributes:
+      label: Probe output
+      description: |
+        With the device on and awake, run `cargo run --bin probe -- --all` (or `pulso-probe.exe --all` from a release) and paste everything.
+        It only lists HID collections and never writes to unknown devices.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else
+      description: Links to open-source projects that already read this device, USB captures, firmware version.

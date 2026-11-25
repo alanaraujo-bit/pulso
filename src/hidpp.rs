@@ -129,13 +129,23 @@ impl Channel {
                     break;
                 }
                 if n >= 7 && buf[0] == REPORT_SHORT && buf[2] == DEVICE_CONNECTION {
-                    self.events.push(Event { index: buf[1], feature_index: DEVICE_CONNECTION, function: 0, data: buf[3..n].to_vec() });
+                    self.events.push(Event {
+                        index: buf[1],
+                        feature_index: DEVICE_CONNECTION,
+                        function: 0,
+                        data: buf[3..n].to_vec(),
+                    });
                 }
             }
         }
         let n = self.dev.read_timeout(&mut buf, if self.short.is_some() { half } else { half * 2 })?;
         if n >= 7 && (buf[0] == REPORT_LONG || buf[0] == REPORT_SHORT) && buf[3] & 0x0F == 0 {
-            self.events.push(Event { index: buf[1], feature_index: buf[2], function: buf[3] >> 4, data: buf[4..n].to_vec() });
+            self.events.push(Event {
+                index: buf[1],
+                feature_index: buf[2],
+                function: buf[3] >> 4,
+                data: buf[4..n].to_vec(),
+            });
         }
         Ok(())
     }
@@ -261,8 +271,17 @@ pub fn parse_battery(feat: BatteryFeature, r: &[u8]) -> Option<BatterySample> {
 /// Li-ion discharge curve used by Logitech G mice (from G HUB behaviour, close to Solaar's table).
 pub fn voltage_to_percent(mv: u16) -> u8 {
     const CURVE: [(u16, u8); 11] = [
-        (4186, 100), (4067, 90), (3989, 80), (3922, 70), (3859, 60), (3811, 50),
-        (3778, 40), (3751, 30), (3717, 20), (3671, 10), (3500, 0),
+        (4186, 100),
+        (4067, 90),
+        (3989, 80),
+        (3922, 70),
+        (3859, 60),
+        (3811, 50),
+        (3778, 40),
+        (3751, 30),
+        (3717, 20),
+        (3671, 10),
+        (3500, 0),
     ];
     if mv >= CURVE[0].0 {
         return 100;
@@ -295,7 +314,12 @@ pub fn open_short(api: &HidApi, long: &hidapi::DeviceInfo) -> Option<HidDevice> 
     };
     let target = key(long.path())?;
     api.device_list()
-        .find(|d| d.vendor_id() == 0x046d && d.usage_page() == 0xFF00 && d.usage() == 0x0001 && key(d.path()).as_ref() == Some(&target))
+        .find(|d| {
+            d.vendor_id() == 0x046d
+                && d.usage_page() == 0xFF00
+                && d.usage() == 0x0001
+                && key(d.path()).as_ref() == Some(&target)
+        })
         .and_then(|d| d.open_device(api).ok())
 }
 

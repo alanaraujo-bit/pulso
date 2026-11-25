@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and ideas
+    url: https://github.com/alanaraujo-bit/pulso/discussions
+    about: Ask anything, share setups, propose features.
+  - name: Security report
+    url: https://github.com/alanaraujo-bit/pulso/security/advisories/new
+    about: Please report vulnerabilities privately.
