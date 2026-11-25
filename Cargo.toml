@@ -1,0 +1,33 @@
+[package]
+name = "pulso"
+version = "0.1.0"
+edition = "2021"
+description = "Battery panel for wireless peripherals"
+default-run = "pulso"
+
+[dependencies]
+hidapi = { version = "2", default-features = false, features = ["windows-native"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tauri = { version = "2", features = ["tray-icon", "custom-protocol"] }
+tauri-plugin-notification = "2"
+tauri-plugin-single-instance = "2"
+webview2-com = "0.39"
+windows = { version = "0.62", features = [
+    "Win32_Foundation",
+    "Win32_Graphics_Gdi",
+    "Win32_Graphics_Dwm",
+    "Win32_System_Registry",
+    "Win32_UI_HiDpi",
+    "Win32_UI_WindowsAndMessaging",
+] }
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true

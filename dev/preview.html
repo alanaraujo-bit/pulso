@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<title>Pulso preview</title>
+<!-- Dev-only: renders the panel UI with mock devices in a normal browser (light theme, edge states). -->
+<link rel="stylesheet" href="../ui/style.css">
+<style>
+  html { background: linear-gradient(135deg, #dfe7f2, #f4efe8) !important; }
+  body { width: 348px; margin: 24px !important; background: rgba(240,240,244,.75) !important; border-radius: 8px; overflow: visible !important; }
+</style>
+<script>
+  const mockNow = Date.now() / 1000;
+  const mockDevices = [
+    { id: "a", name: "PRO 2 LIGHTSPEED", kind: "mouse", online: true, percent: 42, charge: "charging", session_start: mockNow - 7200, session_observed: true, unplugged_at: null, last_seen: mockNow, remaining: null, to_full: 3900, confidence: .2, rated_hours: 95 },
+    { id: "b", name: "AULA F75", kind: "keyboard", online: true, percent: 12, charge: "discharging", session_start: mockNow - 600, session_observed: false, unplugged_at: mockNow - 86400 * 3, last_seen: mockNow, remaining: 5 * 3600, to_full: null, confidence: .7, rated_hours: 60 },
+    { id: "c", name: "PRO X 2 LIGHTSPEED", kind: "headset", online: true, percent: 23, charge: "discharging", session_start: mockNow - 9000, session_observed: true, unplugged_at: mockNow - 40000, last_seen: mockNow, remaining: 11 * 3600, to_full: null, confidence: .5, rated_hours: 50 },
+    { id: "d", name: "Teclado 2.4G", kind: "keyboard", online: false, percent: 64, charge: "discharging", session_start: null, session_observed: false, unplugged_at: null, last_seen: mockNow - 1800, remaining: null, to_full: null, confidence: 0, rated_hours: 40 },
+  ];
+  window.__TAURI__ = {
+    core: { invoke: async (cmd) => cmd === "snapshot" ? { devices: mockDevices, settings: { mode: "flyout", tray_icons: true, autostart: false, on_top: true }, now: mockNow } : null },
+    event: { listen: async () => () => {} },
+  };
+</script>
+</head>
+<body>
+<main id="panel" class="panel">
+  <header class="head">
+    <div class="brand"><span class="title">Dispositivos</span><span class="sub" id="summary"></span></div>
+    <div class="actions">
+      <button class="icon-btn" id="btn-refresh"><svg viewBox="0 0 20 20"><path d="M15.5 9.2A5.6 5.6 0 0 0 5.2 6.4M4.5 10.8a5.6 5.6 0 0 0 10.3 2.8"/><path d="M5 3.6v2.9h2.9M15 16.4v-2.9h-2.9"/></svg></button>
+      <button class="icon-btn" id="btn-settings" aria-expanded="false"><svg viewBox="0 0 20 20"><path d="M3.5 6.5h8M15 6.5h1.5M3.5 13.5H5M8.5 13.5h8"/><circle cx="13.2" cy="6.5" r="1.7"/><circle cx="6.8" cy="13.5" r="1.7"/></svg></button>
+    </div>
+  </header>
+  <div class="views"><section id="list" class="list"></section><section id="settings" class="settings" hidden><label class="row" id="row-ontop"><span><b>x</b></span><input type="checkbox" class="switch" data-key="on_top"></label><button id="btn-quit"></button></section></div>
+</main>
+<template id="tpl-device">
+  <article class="device">
+    <div class="top">
+      <div class="orb">
+        <svg viewBox="0 0 48 48">
+          <circle class="ring-track" cx="24" cy="24" r="22.6"/>
+          <circle class="ring" cx="24" cy="24" r="22.6" pathLength="100" transform="rotate(-90 24 24)"/>
+          <circle class="bowl" cx="24" cy="24" r="19"/>
+          <g class="water"><g class="lvl">
+            <path class="wave back" d="M-48 4 C-40 1 -32 1 -24 4 S-8 7 0 4 S16 1 24 4 S40 7 48 4 S64 1 72 4 S88 7 96 4 V60 H-48 Z"/>
+            <path class="wave front" d="M-48 4 C-40 7 -32 7 -24 4 S-8 1 0 4 S16 7 24 4 S40 1 48 4 S64 7 72 4 S88 1 96 4 V60 H-48 Z"/>
+          </g></g>
+          <circle class="rim" cx="24" cy="24" r="19"/>
+          <path class="gloss" d="M11.5 19.5a13.5 13.5 0 0 1 17-10.6a17 17 0 0 0-17 10.6z"/>
+          <g class="glyph"></g>
+        </svg>
+      </div>
+      <div class="meta"><div class="name"></div><div class="status"></div></div>
+      <div class="pct"><span class="num"></span><span class="sym">%</span></div>
+    </div>
+    <dl class="stats"></dl>
+  </article>
+</template>
+<script src="../ui/app.js"></script>
+</body>
+</html>
+

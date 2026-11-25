@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pulso</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main id="panel" class="panel">
+    <header class="head" data-tauri-drag-region>
+      <div class="brand" data-tauri-drag-region>
+        <span class="title" data-tauri-drag-region>Dispositivos</span>
+        <span class="sub" id="summary" data-tauri-drag-region></span>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" id="btn-refresh" aria-label="Atualizar agora" title="Atualizar agora">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M15.5 9.2A5.6 5.6 0 0 0 5.2 6.4M4.5 10.8a5.6 5.6 0 0 0 10.3 2.8"/><path d="M5 3.6v2.9h2.9M15 16.4v-2.9h-2.9"/></svg>
+        </button>
+        <button class="icon-btn" id="btn-settings" aria-label="Ajustes" title="Ajustes" aria-expanded="false">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3.5 6.5h8M15 6.5h1.5M3.5 13.5H5M8.5 13.5h8"/><circle cx="13.2" cy="6.5" r="1.7"/><circle cx="6.8" cy="13.5" r="1.7"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="views">
+      <section id="list" class="list" aria-live="polite"></section>
+
+      <section id="settings" class="settings" hidden>
+        <label class="row"><span><b>Painel flutuante</b><small>Fica aberto na área de trabalho e pode ser arrastado</small></span>
+          <input type="checkbox" class="switch" data-key="mode"></label>
+        <label class="row" id="row-ontop"><span><b>Sempre visível</b><small>Mantém o painel flutuante acima das janelas</small></span>
+          <input type="checkbox" class="switch" data-key="on_top"></label>
+        <label class="row"><span><b>Porcentagem na bandeja</b><small>Um indicador por dispositivo ao lado do relógio</small></span>
+          <input type="checkbox" class="switch" data-key="tray_icons"></label>
+        <label class="row"><span><b>Iniciar com o Windows</b><small>Abre minimizado na bandeja</small></span>
+          <input type="checkbox" class="switch" data-key="autostart"></label>
+        <div class="row foot-row">
+          <span class="version">Pulso 0.1</span>
+          <button class="text-btn danger" id="btn-quit">Sair do Pulso</button>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <template id="tpl-device">
+    <article class="device">
+      <div class="top">
+        <div class="orb">
+          <svg viewBox="0 0 48 48" aria-hidden="true">
+            <circle class="ring-track" cx="24" cy="24" r="22.6"/>
+            <circle class="ring" cx="24" cy="24" r="22.6" pathLength="100" transform="rotate(-90 24 24)"/>
+            <circle class="bowl" cx="24" cy="24" r="19"/>
+            <g class="water">
+              <g class="lvl">
+                <path class="wave back" d="M-48 4 C-40 1 -32 1 -24 4 S-8 7 0 4 S16 1 24 4 S40 7 48 4 S64 1 72 4 S88 7 96 4 V60 H-48 Z"/>
+                <path class="wave front" d="M-48 4 C-40 7 -32 7 -24 4 S-8 1 0 4 S16 7 24 4 S40 1 48 4 S64 7 72 4 S88 1 96 4 V60 H-48 Z"/>
+              </g>
+            </g>
+            <circle class="rim" cx="24" cy="24" r="19"/>
+            <path class="gloss" d="M11.5 19.5a13.5 13.5 0 0 1 17-10.6a17 17 0 0 0-17 10.6z"/>
+            <g class="glyph"></g>
+          </svg>
+        </div>
+        <div class="meta">
+          <div class="name"></div>
+          <div class="status"></div>
+        </div>
+        <div class="pct"><span class="num"></span><span class="sym">%</span></div>
+      </div>
+      <dl class="stats"></dl>
+    </article>
+  </template>
+
+  <script src="app.js"></script>
+</body>
+</html>
